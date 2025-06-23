@@ -1,0 +1,35 @@
+# Arquivos e pastas ignoradas pelo Git
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+.env # Variáveis de ambiente se você tiver
+
+# Dados
+data/ # ESTA LINHA É CRÍTICA! Ela garante que a pasta 'data/' e seu conteúdo NÃO serão adicionados ao Git.
+
+# Logs
+*.log
+
+# Docker
+*.env # Se você usa .env para variáveis de ambiente
+.dockerignore # Pode ser ignorado se não for crítico
+
+# IDEs
+.vscode/
+.idea/
+
+# Node.js (se houvesse)
+node_modules/
+
+# Backups e temporários
+*~
+*.bak
+*.tmp
+*.swp

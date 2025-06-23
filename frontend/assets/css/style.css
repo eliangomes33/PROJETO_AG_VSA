@@ -1,0 +1,916 @@
+:root {
+  /* Tema claro (padrão) */
+  --primary-color: #4a6fa5;
+  --secondary-color: #6b8cae;
+  --background-color: #f0f4f8;
+  --text-color: #2d3748;
+  --card-bg: white;
+  --border-color: #ddd;
+  --base-font-size: 16px; /* Tamanho da fonte padrão */
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra padrão para cards */
+  --hover-color: #3a5a78; /* Cor para hover em botões/links */
+  --stop-button-bg: #dc3545; /* Cor para o botão de parar */
+  --stop-button-hover: #c82333; /* Cor de hover para o botão de parar */
+  --secondary-btn-bg: #f0f0f0; /* Fundo para botões secundários */
+  --secondary-btn-color: var(--text-color); /* Texto para botões secundários */
+
+  /* Cores específicas para elementos como logs e code blocks no tema claro */
+  --log-bg: #2d2d2d;
+  --log-text: #00ff00;
+  --code-bg: #e9ecef;
+  --code-text: #c81f1f;
+  --error-bg: #f8d7da;
+  --error-text: #dc3545;
+  --error-border: #f5c6cb;
+}
+
+/* Estilos para o tema escuro */
+[data-theme="dark"] {
+  --primary-color: #6b8cae; 
+  --secondary-color: #4a6fa5;
+  --background-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --card-bg: #2d2d2d;
+  --border-color: #444;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --secondary-btn-bg: #444;
+  --secondary-btn-color: #f0f0f0;
+
+  /* Cores específicas para elementos como logs e code blocks no tema escuro */
+  --log-bg: #1a1a1a; /* Fundo do log no tema escuro */
+  --log-text: #00ff00; /* Texto verde neon para log */
+  --code-bg: #1a1a1a; /* Fundo de code block escuro */
+  --code-text: #f8f8f8; /* Texto branco para code block */
+  --error-bg: #4a1c22;
+  --error-text: #ffbaba;
+  --error-border: #7b292e;
+}
+
+/* NOVO: Estilos para o tema de alto contraste */
+[data-theme="high-contrast"] {
+  --primary-color: #FFFF00; /* Amarelo vibrante para títulos e elementos de destaque */
+  --secondary-color: #00FFFF; /* Ciano para botões secundários/ícones */
+  --background-color: #000000; /* Fundo preto puro */
+  --text-color: #FFFFFF; /* Texto branco puro */
+  --card-bg: #000000; /* Fundo de cards preto puro */
+  --border-color: #FFFFFF; /* Borda branca pura */
+  --card-shadow: none; /* Sem sombras */
+  --hover-color: #00FFFF; /* Ciano para hover */
+  --stop-button-bg: #FF0000; /* Vermelho forte para botão de parar */
+  --stop-button-hover: #CC0000;
+  --secondary-btn-bg: #000000; /* Fundo de botão secundário preto */
+  --secondary-btn-color: #00FFFF; /* Texto ciano para botões secundários */
+
+  /* Cores específicas para elementos como logs e code blocks no tema alto contraste */
+  --log-bg: #000000; /* Fundo do log preto */
+  --log-text: #00FF00; /* Texto verde neon para log */
+  --code-bg: #000000; /* Fundo de code block preto */
+  --code-text: #00FFFF; /* Texto ciano para code block */
+  --error-bg: #FF0000; /* Vermelho puro para erro */
+  --error-text: #FFFF00; /* Amarelo puro para texto de erro */
+  --error-border: #FFFFFF; /* Borda branca para erro */
+}
+
+
+/* Estilos globais e reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  font-size: var(--base-font-size);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  display: flex;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Novo: Estilo de foco universal para acessibilidade (com a opção !important para garantir) */
+/* Removendo outline: none em favor de um foco visível */
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+  outline: 3px solid var(--primary-color) !important;
+  outline-offset: 2px;
+  box-shadow: none !important; /* Remover sombras para clareza no foco */
+}
+
+/* Ajustes para o tema de alto contraste, se necessário, para sobrescrever o foco padrão */
+[data-theme="high-contrast"] a:focus,
+[data-theme="high-contrast"] button:focus,
+[data-theme="high-contrast"] input:focus,
+[data-theme="high-contrast"] select:focus,
+[data-theme="high-contrast"] textarea:focus {
+  outline: 3px solid var(--border-color) !important; /* Ex: branco para alto contraste */
+  outline-offset: 2px;
+}
+
+
+.sidebar {
+  width: 220px;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 20px;
+  position: fixed;
+  height: 100vh;
+  transition: transform 0.3s ease;
+  z-index: 100;
+}
+
+/* Estilo específico para o tema escuro na sidebar */
+[data-theme="dark"] .sidebar {
+  background-color: #1e3a5f;
+}
+
+/* Novo: Estilo específico para o tema de alto contraste na sidebar */
+[data-theme="high-contrast"] .sidebar {
+  background-color: var(--primary-color); /* Fundo da sidebar com primary-color do HC */
+  color: #000000; /* Texto preto para contrastar com amarelo */
+}
+
+[data-theme="high-contrast"] .sidebar a {
+  color: #000000; /* Links pretos na sidebar de HC */
+}
+
+[data-theme="high-contrast"] .sidebar a:hover {
+  background-color: var(--secondary-color); /* Hover ciano */
+}
+
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin: 15px 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.main-content {
+  margin-left: 240px;
+  padding: 20px;
+  flex-grow: 1;
+  transition: margin 0.3s ease;
+}
+
+.logo {
+  max-width: 100px;
+  margin: 0 auto 20px;
+  display: block;
+}
+
+/* Estilos para containers gerais e cards */
+.container, 
+.card, 
+.results-container, 
+.report-card, 
+.contact-card,
+.progress-container {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  padding: 30px;
+  margin: 0 auto;
+}
+
+/* NOVO: Remover sombras em alto contraste para clareza */
+[data-theme="high-contrast"] .container, 
+[data-theme="high-contrast"] .card, 
+[data-theme="high-contrast"] .results-container, 
+[data-theme="high-contrast"] .report-card, 
+[data-theme="high-contrast"] .contact-card,
+[data-theme="high-contrast"] .progress-container,
+[data-theme="high-contrast"] .image-card {
+  box-shadow: none;
+  border: 2px solid var(--border-color); /* Aumentar borda para visibilidade */
+}
+
+
+/* Ajustes específicos para o container principal */
+.container {
+  max-width: 900px;
+}
+
+h1, h2, h3 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+/* NOVO: Títulos em alto contraste */
+[data-theme="high-contrast"] h1, 
+[data-theme="high-contrast"] h2, 
+[data-theme="high-contrast"] h3 {
+  color: var(--primary-color); /* Amarelo */
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-top: 30px;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* NOVO: Labels em alto contraste */
+[data-theme="high-contrast"] label {
+  color: var(--text-color); /* Branco */
+}
+
+
+input[type="number"],
+input[type="text"],
+input[type="url"],
+input[type="range"],
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border 0.3s;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+/* NOVO: Inputs em alto contraste */
+[data-theme="high-contrast"] input[type="number"],
+[data-theme="high-contrast"] input[type="text"],
+[data-theme="high-contrast"] input[type="url"],
+[data-theme="high-contrast"] select {
+  background-color: #000000; /* Fundo preto */
+  color: #FFFFFF; /* Texto branco */
+  border: 2px solid var(--border-color); /* Borda branca */
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: none;
+}
+
+.submit-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
+}
+
+.clear-btn {
+  background-color: #e2e8f0;
+  color: var(--text-color);
+}
+
+.clear-btn:hover {
+  background-color: #cbd5e0;
+  transform: translateY(-2px);
+}
+
+/* Estilo para o novo botão de parar */
+.stop-btn {
+  background-color: var(--stop-button-bg);
+  color: white;
+}
+
+.stop-btn:hover {
+  background-color: var(--stop-button-hover);
+  transform: translateY(-2px);
+}
+
+
+/* Estilo para botões secundários (usados em configurações, por exemplo) */
+.secondary-btn {
+  background-color: var(--secondary-btn-bg);
+  color: var(--secondary-btn-color);
+  flex: none; /* Não expande como os botões principais */
+  padding: 8px 15px; /* Padding menor */
+  font-size: 0.9em; /* Fonte menor */
+}
+
+.secondary-btn:hover {
+  background-color: #c0c0c0; /* Cinza mais escuro no hover */
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .secondary-btn {
+  background-color: var(--secondary-btn-bg);
+  color: var(--secondary-btn-color);
+}
+
+[data-theme="dark"] .secondary-btn:hover {
+  background-color: #555;
+}
+
+/* NOVO: Botões em alto contraste */
+[data-theme="high-contrast"] .submit-btn {
+  background-color: var(--primary-color); /* Amarelo */
+  color: #000000; /* Texto preto */
+  border: 2px solid var(--primary-color);
+}
+[data-theme="high-contrast"] .submit-btn:hover {
+  background-color: var(--hover-color); /* Amarelo dourado */
+  color: #000000;
+}
+
+[data-theme="high-contrast"] .stop-btn {
+  background-color: var(--stop-button-bg); /* Vermelho */
+  color: #FFFFFF; /* Texto branco */
+  border: 2px solid var(--stop-button-bg);
+}
+[data-theme="high-contrast"] .stop-btn:hover {
+  background-color: var(--stop-button-hover);
+}
+
+[data-theme="high-contrast"] .clear-btn,
+[data-theme="high-contrast"] .secondary-btn {
+  background-color: var(--secondary-btn-bg); /* Fundo preto */
+  color: var(--secondary-btn-color); /* Ciano */
+  border: 2px solid var(--secondary-btn-color);
+}
+[data-theme="high-contrast"] .clear-btn:hover,
+[data-theme="high-contrast"] .secondary-btn:hover {
+  background-color: var(--hover-color); /* Amarelo dourado */
+  color: #000000; /* Texto preto */
+}
+
+
+/* Tema escuro para botões clear */
+[data-theme="dark"] .clear-btn {
+  background-color: #444;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .clear-btn:hover {
+  background-color: #555;
+}
+
+
+.help-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* NOVO: help-icon em alto contraste */
+[data-theme="high-contrast"] .help-icon {
+  background-color: var(--primary-color); /* Amarelo */
+  color: #000000; /* Texto preto */
+  border: 1px solid var(--text-color); /* Borda branca */
+}
+
+.tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 120%;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 250px;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  margin-top: 5px;
+  pointer-events: none;
+}
+
+/* NOVO: tooltip em alto contraste */
+[data-theme="high-contrast"] .tooltip {
+  background-color: var(--card-bg); /* Fundo preto */
+  color: var(--text-color); /* Texto branco */
+  border: 2px solid var(--border-color); /* Borda branca */
+}
+
+.results-container p {
+  margin-bottom: 10px;
+  font-size: 17px;
+}
+
+.results-container p strong {
+  color: var(--primary-color);
+}
+
+/* NOVO: strong em alto contraste */
+[data-theme="high-contrast"] .results-container p strong {
+  color: var(--text-color); /* Branco */
+}
+
+
+code {
+  background-color: #e9ecef;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #c81f1f;
+  font-size: 0.95em;
+  word-break: break-all;
+  display: inline-block;
+}
+
+/* NOVO: code em alto contraste */
+[data-theme="high-contrast"] code {
+  background-color: var(--code-bg);
+  color: var(--code-text);
+}
+
+
+#accuracyChart {
+  margin-top: 20px;
+  background-color: var(--card-bg);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* NOVO: accuracyChart em alto contraste */
+[data-theme="high-contrast"] #accuracyChart {
+  background-color: var(--background-color); /* Fundo preto */
+  border: 2px solid var(--border-color); /* Borda branca */
+  box-shadow: none; /* Sem sombras */
+}
+
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 15px;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* NOVO: error-message em alto contraste */
+[data-theme="high-contrast"] .error-message {
+  background-color: var(--error-bg);
+  color: var(--error-text);
+  border-color: var(--error-border);
+}
+
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: var(--primary-color);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+/* NOVO: spinner em alto contraste */
+[data-theme="high-contrast"] .spinner {
+  border-color: var(--secondary-btn-bg); /* Fundo preto */
+  border-left-color: var(--primary-color); /* Amarelo */
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estilos para a página de Ajuda */
+.help-content {
+  line-height: 1.6;
+}
+
+.faq-section {
+  margin-bottom: 40px;
+}
+
+.faq-item {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+}
+
+.faq-question {
+  color: var(--primary-color);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* NOVO: faq-question em alto contraste */
+[data-theme="high-contrast"] .faq-question {
+  color: var(--text-color); /* Branco */
+}
+[data-theme="high-contrast"] .faq-item.active .faq-question {
+  color: var(--primary-color); /* Amarelo quando ativo */
+}
+
+
+.faq-question span {
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.faq-item.active .faq-question span {
+  transform: rotate(45deg); /* Gira o '+' para 'x' ou 'diagonal' */
+}
+
+.faq-answer {
+  display: none;
+  padding: 10px 0;
+  margin-top: 10px;
+  border-top: 1px dashed var(--border-color);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* NOVO: faq-answer em alto contraste */
+[data-theme="high-contrast"] .faq-answer {
+  border-top: 2px dashed var(--border-color); /* Borda mais visível */
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.contact-section {
+  margin: 40px 0;
+}
+
+.contact-card {
+  /* Já incluído no seletor combinado no topo */
+}
+
+.contact-list {
+  list-style-type: none;
+  margin-top: 15px;
+}
+
+.contact-list li:before {
+  content: "•";
+  color: var(--primary-color);
+  font-weight: bold;
+  position: absolute;
+  left: 10px;
+}
+
+/* NOVO: contact-list li:before em alto contraste */
+[data-theme="high-contrast"] .contact-list li:before {
+  color: var(--primary-color); /* Amarelo */
+}
+
+/* Estilos para a página de Relatórios */
+.report-links {
+  display: grid;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.report-card {
+  /* Já incluído no seletor combinado no topo */
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+/* NOVO: report-card em alto contraste */
+[data-theme="high-contrast"] .report-card {
+  background: var(--background-color); /* Fundo preto */
+  border: 2px solid var(--border-color); /* Borda branca */
+}
+
+/* Log de Execução */
+.log-container {
+  margin-top: 30px;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* NOVO: log-container e log-output em alto contraste */
+[data-theme="high-contrast"] .log-container {
+  background: var(--background-color); /* Fundo preto */
+  border: 2px solid var(--border-color);
+}
+
+.log-output {
+  height: 200px;
+  overflow-y: auto;
+  background: #2d2d2d;
+  color: #00ff00;
+  padding: 15px;
+  font-family: monospace;
+  border-radius: 5px;
+  margin-top: 10px;
+  white-space: pre-wrap;
+}
+
+[data-theme="high-contrast"] .log-output {
+  background: var(--log-bg);
+  color: var(--log-text);
+  border: 2px solid var(--log-text); /* Borda verde */
+}
+
+
+/* Seção de Progresso em Tempo Real */
+.progress-container {
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* NOVO: progress-container em alto contraste */
+[data-theme="high-contrast"] .progress-container {
+  background-color: var(--background-color); /* Fundo preto */
+  border: 2px solid var(--border-color); /* Borda branca */
+}
+
+.progress-container p {
+  margin-bottom: 8px;
+  font-size: 1.1em;
+}
+
+.progress-container p strong {
+  color: var(--primary-color);
+}
+
+/* NOVO: strong em progress-container em alto contraste */
+[data-theme="high-contrast"] .progress-container p strong {
+  color: var(--text-color); /* Branco */
+}
+
+
+.progress-container code {
+  font-size: 0.85em; /* Menor para hiperparâmetros */
+  word-break: break-all;
+  display: block; /* Para quebrar linha se o JSON for longo */
+  margin-top: 5px;
+  white-space: pre-wrap; /* Garante que o JSON formatado mantenha as quebras de linha */
+}
+
+/* NOVO: code em progress-container em alto contraste */
+[data-theme="high-contrast"] .progress-container code {
+  background-color: var(--code-bg);
+  color: var(--code-text);
+}
+
+
+/* Seções de Imagens de Exemplo */
+.image-examples-container {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* NOVO: image-examples-container em alto contraste */
+[data-theme="high-contrast"] .image-examples-container {
+  background-color: var(--background-color); /* Fundo preto */
+  border-top: 2px solid var(--border-color); /* Borda branca */
+}
+
+.image-examples-container h3 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+/* NOVO: h3 em image-examples-container em alto contraste */
+[data-theme="high-contrast"] .image-examples-container h3 {
+  color: var(--primary-color); /* Amarelo */
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Colunas flexíveis */
+  gap: 15px;
+  justify-content: center;
+}
+
+.image-card {
+  background-color: var(--background-color); /* Fundo sutil para o card da imagem */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* NOVO: image-card em alto contraste */
+[data-theme="high-contrast"] .image-card {
+  background-color: var(--card-bg); /* Fundo preto */
+  border: 2px solid var(--border-color); /* Borda branca */
+}
+
+.image-card img {
+  max-width: 100px; /* Tamanho da imagem */
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  border: 1px solid #eee; /* Borda leve para imagens */
+}
+
+/* NOVO: img em image-card em alto contraste */
+[data-theme="high-contrast"] .image-card img {
+  border: 2px solid var(--border-color); /* Borda branca */
+}
+
+.image-title {
+  font-size: 0.9em;
+  color: var(--text-color);
+  line-height: 1.2;
+}
+
+/* NOVO: image-title em alto contraste */
+[data-theme="high-contrast"] .image-title {
+  color: var(--text-color); /* Branco */
+}
+
+.image-title strong {
+  color: var(--primary-color);
+}
+
+/* NOVO: image-title strong em alto contraste */
+[data-theme="high-contrast"] .image-title strong {
+  color: var(--primary-color); /* Amarelo */
+}
+
+/* Estilos para checkbox e label (para configurações) */
+.form-group.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group.checkbox-group label {
+    margin-bottom: 0; /* Remove margin-bottom padrão */
+    font-weight: normal;
+    color: var(--text-color); /* Muda a cor para o texto principal */
+    flex-grow: 1; /* Permite que a label ocupe espaço */
+}
+
+.form-group.checkbox-group input[type="checkbox"] {
+    width: auto; /* Deixa o checkbox ter seu tamanho natural */
+    margin-right: 5px; /* Espaço entre checkbox e texto */
+}
+
+/* NOVO: checkbox-group input[type="checkbox"] em alto contraste */
+[data-theme="high-contrast"] .form-group.checkbox-group input[type="checkbox"] {
+  border: 2px solid var(--border-color); /* Borda branca */
+  background-color: var(--background-color); /* Fundo preto */
+}
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 250px;
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+  
+  .buttons {
+    flex-direction: column;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .tooltip {
+    width: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  #accuracyChart {
+    max-width: 100%;
+  }
+
+  /* Botão de menu para mobile */
+  .menu-toggle {
+    display: block;
+  }
+  
+  .image-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Menos colunas em telas pequenas */
+  }
+
+  .image-card img {
+    max-width: 80px;
+  }
+}
+
+/* Botão de menu para mobile (fora do media query para propriedades gerais) */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  z-index: 101;
+  cursor: pointer;
+}
+
+/* NOVO: menu-toggle em alto contraste */
+[data-theme="high-contrast"] .menu-toggle {
+  background: var(--primary-color); /* Amarelo */
+  color: #000000; /* Texto preto */
+  border: 2px solid var(--text-color); /* Borda branca */
+}
+
+/* Controle de range (ajustes para flexbox) */
+.range-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.range-value {
+  min-width: 40px;
+  text-align: center;
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajuda - Otimização de CNN com AG</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <img src="assets/img/logo.png" alt="Logo" class="logo">
+    <h2>Menu</h2>
+    <a href="index.html">Início</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="algoritmo.html">Algoritmo</a>
+    <a href="relatorios.html">Relatórios</a>
+    <a href="configuracoes.html">Configurações</a>
+    <a href="ajuda.html">Ajuda</a>
+  </aside>
+
+  <main class="main-content">
+    <div class="container">
+      <h1>Central de Ajuda</h1>
+      
+      <div class="help-content">
+        <section class="faq-section">
+          <h2>Perguntas Frequentes</h2>
+          
+          <div class="faq-item">
+            <div class="faq-question">
+              Como utilizar o aplicativo para otimizar a CNN?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <h3>Passo a Passo para Execução:</h3>
+              <ol>
+                <li>
+                  <h4>1. Acessar a Página "Início"</h4>
+                  <p>Certifique-se de estar na página principal (<code>index.html</code>) onde o formulário de configuração do Algoritmo Genético está localizado.</p>
+                </li>
+                <li>
+                  <h4>2. Configurar os Parâmetros do Algoritmo Genético</h4>
+                  <p>Preencha os campos do formulário com os hiperparâmetros desejados para o AG:</p>
+                  <ul>
+                    <li><strong>Tamanho da População:</strong> Define quantos conjuntos de hiperparâmetros (indivíduos) serão avaliados em cada geração. Um número maior pode levar a uma busca mais abrangente, mas exige mais tempo de processamento.</li>
+                    <li><strong>Número de Gerações:</strong> Quantas "rodadas" o algoritmo genético irá executar. Cada geração envolve a avaliação da população atual e a criação de uma nova população a partir dos melhores indivíduos.</li>
+                    <li><strong>Taxa de Mutação:</strong> A probabilidade de um hiperparâmetro ser alterado aleatoriamente durante a criação de novos indivíduos. Uma taxa muito baixa pode levar a otimização local; uma taxa muito alta pode impedir a convergência.</li>
+                    <li><strong>Épocas por Modelo:</strong> O número de épocas que cada SmallCNN será treinada no dataset CIFAR-10 para ter sua acurácia (fitness) avaliada. Mais épocas geralmente significam acurácias mais precisas para o modelo individual, mas aumentam drasticamente o tempo de execução total.</li>
+                  </ul>
+                  <p>Além disso, você pode definir as <strong>Opções de Hiperparâmetros</strong> (Taxas de Aprendizado, Tamanhos de Batch, Número de Filtros, Neurônios FC, Taxas de Dropout) como listas de valores separados por vírgula. O AG escolherá entre esses valores para compor seus indivíduos.</p>
+                </li>
+                <li>
+                  <h4>3. Iniciar a Execução</h4>
+                  <p>Clique no botão "<strong style="color: var(--primary-color);">Executar AG</strong>".</p>
+                  <p>Imediatamente, um indicador de carregamento (spinner) aparecerá, e a seção "Progresso Atual" ficará visível.</p>
+                </li>
+                <li>
+                  <h4>4. Acompanhar o Progresso em Tempo Real</h4>
+                  <p>A aplicação fornecerá feedback contínuo através da seção "Progresso Atual" e do "Log de Execução":</p>
+                  <ul>
+                    <li><strong>Progresso Atual:</strong> Mostrará a geração atual, o indivíduo sendo avaliado, e a acurácia do melhor modelo global encontrado até o momento. O gráfico de acurácias também será atualizado dinamicamente.</li>
+                    <li><strong>Log de Execução:</strong> Exibirá mensagens detalhadas sobre o estado do backend, o carregamento dos dados, o início de cada geração, a avaliação de cada indivíduo e qualquer aviso ou erro.</li>
+                  </ul>
+                </li>
+                <li>
+                  <h4>5. Interromper a Execução (Opcional)</h4>
+                  <p>Caso deseje parar o algoritmo antes que ele termine todas as gerações, clique no botão "<strong style="color: var(--stop-button-bg);">Parar AG</strong>".</p>
+                  <p>O algoritmo tentará parar de forma segura após finalizar a avaliação do indivíduo ou da época atual. Os resultados parciais serão exibidos.</p>
+                </li>
+                <li>
+                  <h4>6. Visualizar os Resultados Finais</h4>
+                  <p>Ao final da execução (ou após uma interrupção), a seção "Resultados Finais do Algoritmo Genético" será exibida, contendo:</p>
+                  <ul>
+                    <li><strong>Relatório Final Detalhado:</strong> Tempo total de execução, o melhor conjunto de hiperparâmetros encontrado, a acurácia de validação final e a precisão média de validação final.</li>
+                    <li><strong>Histórico de Acurácias:</strong> Um gráfico interativo mostrando a evolução das acurácias dos melhores indivíduos ao longo das gerações.</li>
+                    <li><strong>Exemplos de Imagens:</strong> 5 exemplos de predições corretas e 5 exemplos de predições incorretas do melhor modelo encontrado, para uma análise qualitativa.</li>
+                  </ul>
+                </li>
+                <li>
+                  <h4>7. Iniciar Nova Execução</h4>
+                  <p>Após a conclusão, o botão "<strong style="color: var(--primary-color);">Executar AG</strong>" será reativado, permitindo que você experimente novas configurações de hiperparâmetros.</p>
+                </li>
+              </ol>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question">
+              O que é um Algoritmo Genético (AG)?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Um Algoritmo Genético (AG) é uma técnica de otimização e busca inspirada no processo de seleção natural e genética. Ele simula a evolução biológica para encontrar soluções aproximadas para problemas de otimização e busca que são difíceis de resolver por métodos tradicionais.</p>
+              <p>Os principais componentes de um AG incluem:</p>
+              <ul>
+                <li><strong>População:</strong> Um conjunto de soluções candidatas (indivíduos).</li>
+                <li><strong>Indivíduo:</strong> Uma representação de uma solução para o problema, geralmente codificada como uma "cromossomo" (conjunto de parâmetros).</li>
+                <li><strong>Fitness (Função de Aptidão):</strong> Uma métrica que avalia o quão "boa" é uma solução. O AG tenta maximizar essa fitness.</li>
+                <li><strong>Seleção:</strong> Processo de escolha dos indivíduos mais aptos para gerar a próxima geração.</li>
+                <li><strong>Crossover (Cruzamento):</strong> Combinação de partes de dois ou mais indivíduos (pais) para criar novos indivíduos (filhos), herdando características de seus pais.</li>
+                <li><strong>Mutação:</strong> Pequenas alterações aleatórias em um indivíduo para introduzir diversidade na população e evitar a otimização local.</li>
+              </ul>
+              <p>O AG opera em gerações, onde em cada geração, a população evolui através da seleção, crossover e mutação, buscando soluções cada vez melhores.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              O que são Redes Neurais Convolucionais (CNNs) e por que otimizar seus hiperparâmetros?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <p><strong>Redes Neurais Convolucionais (CNNs)</strong> são um tipo especializado de rede neural artificial, amplamente utilizadas para análise de imagem e vídeo. Elas são inspiradas no córtex visual de animais e são excelentes na detecção de padrões complexos em dados visuais. Suas "camadas convolucionais" aplicam filtros para extrair características relevantes (bordas, texturas, formas, etc.) das imagens, de forma hierárquica.</p>
+              <p><strong>Hiperparâmetros</strong> são configurações externas de um modelo de machine learning, que não são aprendidas a partir dos dados durante o treinamento, mas sim definidas antes do treinamento. Exemplos em CNNs incluem:</p>
+              <ul>
+                <li><strong>Taxa de Aprendizado:</strong> Controla o tamanho dos passos que o algoritmo de otimização dá ao ajustar os pesos do modelo.</li>
+                <li><strong>Tamanho do Batch:</strong> Número de amostras de treinamento processadas antes que os pesos do modelo sejam atualizados.</li>
+                <li><strong>Número de Filtros:</strong> Quantidade de filtros em uma camada convolucional, impactando a capacidade de extração de características do modelo.</li>
+                <li><strong>Taxa de Dropout:</strong> Porcentagem de neurônios que são "desligados" aleatoriamente durante o treinamento para prevenir overfitting (quando o modelo se ajusta muito bem aos dados de treinamento, mas falha em generalizar para novos dados).</li>
+              </ul>
+              <p><strong>Por que otimizar?</strong> A escolha ideal desses hiperparâmetros é crucial para o desempenho de uma CNN. Um conjunto mal escolhido pode levar a um modelo que não aprende, que demora demais para treinar, ou que tem baixa acurácia. A otimização manual é um processo de tentativa e erro, demorado e ineficiente. Algoritmos como o Genético automatizam essa busca, explorando diferentes combinações de hiperparâmetros para encontrar aquelas que resultam no melhor desempenho do modelo.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              O que é o dataset CIFAR-10?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <p>O <strong>CIFAR-10</strong> é um dos datasets mais utilizados para pesquisa em aprendizado de máquina e visão computacional, especialmente para classificação de imagens.</p>
+              <p>Ele consiste em 60.000 imagens coloridas (32x32 pixels) em 10 classes distintas, com 6.000 imagens por classe. As 10 classes são:</p>
+              <ul>
+                <li>Avião</li>
+                <li>Automóvel</li>
+                <li>Pássaro</li>
+                <li>Gato</li>
+                <li>Cervo</li>
+                <li>Cachorro</li>
+                <li>Sapo</li>
+                <li>Cavalo</li>
+                <li>Navio</li>
+                <li>Caminhão</li>
+              </ul>
+              <p>O dataset é dividido em 50.000 imagens para treinamento e 10.000 para teste. Devido à sua simplicidade visual e número de classes razoável, é ideal para prototipar e comparar o desempenho de algoritmos de classificação de imagens, como a CNN utilizada neste projeto.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              O que significam as métricas 'Acurácia' e 'Precisão Média'?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Estas são métricas comuns usadas para avaliar o desempenho de modelos de classificação, como a CNN treinada neste aplicativo:</p>
+              <ul>
+                <li>
+                  <strong>Acurácia:</strong>
+                  <ul>
+                    <li>É a métrica mais simples e comum.</li>
+                    <li>Representa a proporção de predições corretas do modelo sobre o total de predições feitas.</li>
+                    <li>Calcula-se como: (Número de Predições Corretas) / (Número Total de Predições).</li>
+                    <li>Um modelo com 90% de acurácia, por exemplo, previu corretamente 90 em cada 100 amostras.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Precisão Média (Mean Precision):</strong>
+                  <ul>
+                    <li>A precisão é uma métrica que se concentra na qualidade das predições positivas. Para cada classe, a precisão mede a proporção de "verdadeiros positivos" (itens corretamente identificados como sendo daquela classe) em relação ao total de itens que o modelo *previu* como sendo daquela classe (verdadeiros positivos + falsos positivos).</li>
+                    <li>A <strong>Precisão Média</strong> (Mean Average Precision - mAP, ou simplesmente média das precisões das classes) é calculada obtendo-se a precisão para cada uma das 10 classes do CIFAR-10, e então calculando a média dessas precisões.</li>
+                    <li>É uma métrica útil especialmente quando há um desequilíbrio entre as classes ou quando é importante minimizar falsos positivos para classes específicas.</li>
+                  </ul>
+                </li>
+              </ul>
+              <p>No contexto deste aplicativo, o Algoritmo Genético busca otimizar os hiperparâmetros para maximizar a <strong>Acurácia</strong> do modelo no conjunto de validação, pois ela é a métrica principal de fitness. A Precisão Média é apresentada como uma métrica adicional para uma avaliação mais completa do desempenho.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question">
+              Os resultados não estão bons. Como posso melhorar?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Se a acurácia do seu melhor modelo final não está satisfatória, você pode tentar ajustar os parâmetros do Algoritmo Genético e as opções de hiperparâmetros da CNN para explorar o espaço de busca de forma mais eficaz:</p>
+              <ul>
+                <li>
+                  <strong>Aumentar o Tamanho da População:</strong> Uma população maior permite que o AG explore mais combinações de hiperparâmetros em cada geração, aumentando a chance de encontrar bons indivíduos. (Custo: Mais tempo por geração).
+                </li>
+                <li>
+                  <strong>Aumentar o Número de Gerações:</strong> Mais gerações dão ao AG mais tempo para evoluir as soluções e convergir para um ótimo. (Custo: Mais tempo total).
+                </li>
+                <li>
+                  <strong>Aumentar as Épocas por Modelo (<code>ag_epochs</code>):</strong> Este é um fator muito importante. Dar mais épocas para cada CNN treinar durante a avaliação do AG permite que cada modelo atinja uma acurácia maior, o que fornece uma avaliação de fitness mais "verdadeira" para o AG. Modelos mal treinados (poucas épocas) podem enganar o AG sobre a real qualidade de um hiperparâmetro. (Custo: Aumenta significativamente o tempo de execução).
+                </li>
+                <li>
+                  <strong>Expandir as Opções de Hiperparâmetros:</strong> Certifique-se de que as listas de "Taxas de Aprendizado", "Tamanhos de Batch", "Número de Filtros", "Neurônios FC" e "Taxas de Dropout" que você fornece no formulário contêm uma variedade de valores razoáveis. Por exemplo, testar mais taxas de aprendizado ou uma gama maior de tamanhos de batch.
+                </li>
+                <li>
+                  <strong>Ajustar a Taxa de Mutação:</strong>
+                  <ul>
+                    <li>Uma <strong>taxa de mutação mais alta</strong> pode ser útil para o AG sair de mínimos locais (soluções que parecem boas, mas não são as melhores globalmente) e explorar mais o espaço de busca.</li>
+                    <li>Uma <strong>taxa de mutação mais baixa</strong> pode ser preferível em gerações mais avançadas, quando o AG já encontrou boas soluções e precisa refinar a busca em torno delas.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Verificar Consistência:</strong> Garanta que os valores fornecidos nas opções de hiperparâmetros são compatíveis com o modelo e o dataset (por exemplo, `batch_size` que seja um divisor do tamanho do dataset, `n_filters` em potências de 2, etc.).
+                </li>
+                <li>
+                  <strong>Considerar Hardware:</strong> Se suas execuções são muito lentas em CPU, investir em uma GPU ou usar um serviço de cloud com GPU pode permitir que você teste configurações muito mais robustas em um tempo razoável.
+                </li>
+              </ul>
+              <p>Lembre-se de que a otimização de hiperparâmetros é um processo iterativo. Pode ser necessário rodar o AG várias vezes com diferentes configurações do próprio AG para encontrar os melhores resultados para sua CNN.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              Quanto tempo leva para executar o Algoritmo Genético?
+              <span>+</span>
+            </div>
+            <div class="faq-answer">
+              <p>O tempo de execução do Algoritmo Genético pode variar significativamente, dependendo de uma combinação de fatores configuráveis e da capacidade do seu hardware. Entender esses fatores pode ajudar a estimar e otimizar o tempo de processamento:</p>
+              <ul>
+                <li>
+                  <strong>1. Parâmetros do Algoritmo Genético:</strong>
+                  <ul>
+                    <li><strong>Tamanho da População:</strong> Quanto maior a população, mais indivíduos (modelos de CNN) precisam ser treinados em cada geração, aumentando linearmente o tempo por geração.</li>
+                    <li><strong>Número de Gerações:</strong> Quanto maior o número de gerações, mais ciclos de avaliação e evolução o AG completará. O tempo total é diretamente proporcional ao número de gerações.</li>
+                    <li><strong>Épocas por Modelo (<code>ag_epochs</code>):</strong> Este é um dos fatores mais críticos. Cada indivíduo na população é treinado por este número de épocas. Aumentar as épocas resulta em modelos mais bem treinados e avaliações de fitness mais precisas, mas prolonga drasticamente o tempo, pois cada modelo passará por mais ciclos de treinamento.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>2. Capacidade do Hardware:</strong>
+                  <ul>
+                    <li><strong>Processador (CPU):</strong> Para ambientes sem GPU, a velocidade do processador impacta diretamente o tempo de treinamento de cada época e a execução geral do AG. Modelos maiores e datasets mais complexos exigirão mais poder de CPU.</li>
+                    <li><strong>Placa de Vídeo (GPU):</strong> Se seu sistema Docker estiver configurado para usar uma GPU (via NVIDIA Container Toolkit, por exemplo), o treinamento dos modelos de CNN será drasticamente acelerado. Uma GPU pode reduzir o tempo de execução de horas para minutos em configurações complexas. Verifique os logs de execução para confirmar se a GPU está sendo utilizada ("Dispositivo selecionado para treinamento: cuda").</li>
+                    <li><strong>Memória RAM:</strong> O treinamento de modelos de deep learning consome muita memória. Insuficiência de RAM pode levar a lentidão excessiva (swapping) ou falhas na execução.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>3. Dataset (CIFAR-10):</strong>
+                  <ul>
+                    <li>O dataset CIFAR-10 é de tamanho moderado. O tempo de download inicial pode variar, mas uma vez baixado e persistido (no volume Docker `./data`), ele não afetará execuções subsequentes.</li>
+                  </ul>
+                </li>
+              </ul>
+              <p><strong>Estimativas e Dicas:</strong></p>
+              <ul>
+                <li><strong>Configurações Rápidas (Testes Iniciais):</strong> Para testar o aplicativo e o AG rapidamente, use uma população pequena (ex: 4-6), poucas gerações (ex: 2-3) e poucas épocas por modelo (ex: 1-2). Nesses casos, a execução pode durar de <strong>alguns minutos a 15-20 minutos (em CPU)</strong>.</li>
+                <li><strong>Configurações Moderadas (Otimização Razoável):</strong> Para uma busca mais significativa, uma população de 10-20, 5-10 gerações e 3-5 épocas por modelo é um bom ponto de partida. Isso pode levar de <strong>30 minutos a algumas horas (em CPU)</strong>. Com GPU, o tempo seria consideravelmente menor.</li>
+                <li><strong>Otimização Abrangente:</strong> Populações maiores, mais gerações e um número maior de épocas por modelo podem resultar em um melhor conjunto de hiperparâmetros, mas podem exigir <strong>várias horas, ou até um dia inteiro (em CPU)</strong>. Para essas execuções, o uso de GPU é altamente recomendado.</li>
+                <li><strong>Acompanhamento:</strong> Utilize o "Log de Execução" e a seção "Progresso Atual" para monitorar o tempo e a evolução da acurácia. Se a acurácia global parar de melhorar significativamente, você pode considerar interromper a execução manualmente com o botão "Parar AG".</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        
+        <section class="contact-section">
+          <h2>Contato</h2>
+          <div class="contact-card">
+            <h3>Equipe de Desenvolvimento</h3>
+            <p>Curso de Ciência da Computação 7° semestre - 7</p>
+            
+            <ul class="contact-list">
+              <li>
+                <strong>Email:</strong> lianicolechaves@gmail.com
+              </li>
+              <li>
+                <strong>Email:</strong> Jossylynnovo123@gmail.com
+              </li>
+               <li>
+                <strong>Email:</strong> eliangomes@gmail.com
+              </li>
+              <li>
+                <strong>Repositório:</strong> github.com/projeto-ia-genetica
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // FAQ interactivo
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        const answer = question.nextElementSibling;
+        const icon = question.querySelector('span');
+        
+        // Toggle class 'active' no item da FAQ
+        item.classList.toggle('active');
+
+        // Alterna a exibição da resposta
+        if (item.classList.contains('active')) {
+          answer.style.display = 'block';
+          icon.textContent = '-';
+        } else {
+          answer.style.display = 'none';
+          icon.textContent = '+';
+        }
+      });
+    });
+  </script>
+  <script src="assets/js/theme.js"></script>
+</body>
+</html>

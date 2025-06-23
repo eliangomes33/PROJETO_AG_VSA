@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Algoritmo - Otimização de CNN com AG</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <img src="assets/img/logo.png" alt="Logo" class="logo" />
+    <h2>Menu</h2>
+    <a href="index.html">Início</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="algoritmo.html">Algoritmo</a>
+    <a href="relatorios.html">Relatórios</a>
+    <a href="configuracoes.html">Configurações</a>
+    <a href="ajuda.html">Ajuda</a>
+  </aside>
+
+  <main class="main-content">
+    <div class="container">
+      <h1>Algoritmo Genético para Otimização de CNN</h1>
+      
+      <div class="algorithm-content">
+        <h2>Visão Geral</h2>
+        <p>Nosso algoritmo genético foi projetado para encontrar a melhor combinação de hiperparâmetros para uma SmallCNN treinada no dataset CIFAR-10.</p>
+        
+        <h2>Componentes Principais</h2>
+        
+        <h3>1. Representação do Indivíduo</h3>
+        <p>Cada indivíduo representa uma configuração de hiperparâmetros da CNN, incluindo:</p>
+        <ul>
+          <li>Taxa de aprendizado</li>
+          <li>Tamanho do batch</li>
+          <li>Número de filtros nas camadas convolucionais</li>
+          <li>Número de neurônios na camada fully connected</li>
+          <li>Taxa de dropout</li>
+        </ul>
+        
+        <h3>2. Função de Avaliação</h3>
+        <p>A fitness de cada indivíduo é determinada pela acurácia da CNN no conjunto de validação após um número fixo de épocas de treinamento.</p>
+        
+        <h3>3. Operadores Genéticos</h3>
+        <p><strong>Seleção:</strong> Elitismo (mantém os 2 melhores indivíduos)</p>
+        <p><strong>Crossover:</strong> Combinação uniforme de parâmetros dos pais</p>
+        <p><strong>Mutação:</strong> Alteração aleatória de um parâmetro</p>
+        
+        <h3>4. Fluxo do Algoritmo</h3>
+        <ol>
+          <li>Inicialização da população aleatória</li>
+          <li>Avaliação de cada indivíduo</li>
+          <li>Seleção dos melhores indivíduos</li>
+          <li>Aplicação de crossover e mutação</li>
+          <li>Repetição até atingir o número máximo de gerações</li>
+        </ol>
+        
+        <h2>Arquitetura da SmallCNN</h2>
+        <p>A arquitetura da nossa CNN consiste em:</p>
+        <ul>
+          <li>3 camadas convolucionais com ReLU e MaxPooling</li>
+          <li>Dropout após as convoluções</li>
+          <li>1 camada fully connected com ReLU</li>
+          <li>Dropout antes da camada de saída</li>
+          <li>Saída com 10 neurônios (classes do CIFAR-10)</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+  <script src="assets/js/theme.js"></script>
+</body>
+</html>
