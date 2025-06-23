@@ -453,9 +453,9 @@ button {
 
 /* NOVO: tooltip em alto contraste */
 [data-theme="high-contrast"] .tooltip {
-  background-color: var(--card-bg); /* Fundo preto puro */
-  color: var(--text-color); /* Texto branco puro */
-  border: 2px solid var(--border-color); /* Borda branca pura */
+  background-color: var(--card-bg); /* Fundo preto */
+  color: var(--text-color); /* Texto branco */
+  border: 2px solid var(--border-color); /* Borda branca */
 }
 
 .results-container p {

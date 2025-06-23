@@ -310,6 +310,7 @@ def run_genetic_algorithm(
             })
 
         evaluations = []
+        gen_start_time = time.time() # NOVO: Tempo de início da geração
         for i, ind in enumerate(population):
             # Verifica a flag de interrupção antes de avaliar cada indivíduo
             if stop_event_flag and stop_event_flag.is_set():
@@ -327,14 +328,16 @@ def run_genetic_algorithm(
                     "hyperparameters": ind
                 })
             
+            individual_eval_start_time = time.time() # NOVO: Tempo de início da avaliação do indivíduo
             acc, prec, preds, labels = evaluate_model(ind, device, train_data=trainset, val_data=valset, epochs=ag_epochs, progress_callback=progress_callback, stop_event=stop_event_flag)
-            
+            individual_eval_time = time.time() - individual_eval_start_time # NOVO: Tempo de avaliação do indivíduo
+
             # Se a avaliação do modelo foi interrompida, sai do loop de indivíduos
             if stop_event_flag and stop_event_flag.is_set():
                 interrupted = True
                 break
             
-            evaluations.append((ind, acc, prec, preds, labels))
+            evaluations.append((ind, acc, prec, preds, labels, individual_eval_time)) # NOVO: Inclui tempo de avaliação
         
         # Se o loop de indivíduos foi interrompido, interrompe também o loop de gerações
         if interrupted:
@@ -346,10 +349,14 @@ def run_genetic_algorithm(
         history_accuracies.append([e[1] for e in evaluations[:min(len(evaluations), 4)]])
 
         current_gen_best_acc = evaluations[0][1]
+        current_gen_best_prec = evaluations[0][2] # NOVO: Precisão do melhor da geração
         current_gen_best_ind = evaluations[0][0]
+        current_gen_best_eval_time = evaluations[0][5] # NOVO: Tempo de avaliação do melhor da geração
+
+        gen_total_time = time.time() - gen_start_time # NOVO: Tempo total da geração
 
         if current_gen_best_acc > best_accuracy:
-            best_individual, best_accuracy, best_precision, best_preds_final, best_labels_final = evaluations[0]
+            best_individual, best_accuracy, best_precision, best_preds_final, best_labels_final, _ = evaluations[0] # NOVO: Ignora tempo aqui
             if progress_callback:
                 progress_callback({
                     "type": "new_best_global",
@@ -364,7 +371,11 @@ def run_genetic_algorithm(
                 "type": "generation_end",
                 "generation": generation + 1,
                 "best_accuracy_gen": current_gen_best_acc,
-                "best_individual_gen": current_gen_best_ind
+                "best_precision_gen": current_gen_best_prec, # NOVO: Precisão
+                "best_individual_gen": current_gen_best_ind,
+                "eval_time_gen": current_gen_best_eval_time, # NOVO: Tempo de avaliação do melhor
+                "total_time_this_gen": gen_total_time, # NOVO: Tempo total da geração
+                "history_accuracies": history_accuracies # Envia histórico para gráfico em tempo real
             })
 
         new_population = []
