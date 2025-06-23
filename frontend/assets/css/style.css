@@ -406,7 +406,7 @@ button {
   border-radius: 50%;
   font-size: 14px;
   cursor: pointer;
-  position: relative;
+  position: relative; /* ADICIONADO: Essencial para posicionamento do tooltip */
 }
 
 /* NOVO: help-icon em alto contraste */
@@ -418,28 +418,44 @@ button {
 
 .tooltip {
   position: absolute;
+  /* Posicionamento ajustado: */
+  bottom: calc(100% + 5px); /* 5px acima do help-icon */
   left: 50%;
-  transform: translateX(-50%);
-  top: 120%;
-  background-color: #333;
-  color: white;
+  transform: translateX(-50%); /* Centraliza */
+  
+  background-color: #333; /* Fundo padrão do tooltip */
+  color: white; /* Cor do texto padrão */
   padding: 10px;
   border-radius: 5px;
   font-size: 14px;
   width: 250px;
-  z-index: 100;
+  min-width: 150px; /* Garante um tamanho mínimo */
+  max-width: 300px; /* Evita que fique muito largo */
+  white-space: normal; /* Permite que o texto quebre linhas */
+  text-align: center; /* Centraliza o texto */
+
+  z-index: 1000; /* Aumentado para garantir que fique por cima */
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s, visibility 0.3s;
-  margin-top: 5px;
-  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s; /* Transição para o transform */
+  pointer-events: none; /* Permite que o hover no pai funcione */
+  /* margin-bottom: 5px; REMOVIDO: bottom: calc(100% + 5px) já cuida do espaçamento */
 }
+
+.help-icon:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  /* Posicionamento ajustado no hover para um leve efeito */
+  bottom: calc(100% + 10px); /* 10px acima do help-icon no hover */
+  transform: translateX(-50%) translateY(-5px); /* Move levemente para cima para efeito */
+}
+
 
 /* NOVO: tooltip em alto contraste */
 [data-theme="high-contrast"] .tooltip {
-  background-color: var(--card-bg); /* Fundo preto */
-  color: var(--text-color); /* Texto branco */
-  border: 2px solid var(--border-color); /* Borda branca */
+  background-color: var(--card-bg); /* Fundo preto puro */
+  color: var(--text-color); /* Texto branco puro */
+  border: 2px solid var(--border-color); /* Borda branca pura */
 }
 
 .results-container p {
@@ -711,7 +727,7 @@ code {
 }
 
 /* NOVO: code em progress-container em alto contraste */
-[data-theme="high-contrast"] .progress-container code {
+[data-theme="high-contrast"] code {
   background-color: var(--code-bg);
   color: var(--code-text);
 }
