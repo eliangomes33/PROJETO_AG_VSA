@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Otimização de CNN com Algoritmo Genético</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <aside class="sidebar">
+    <img src="assets/img/logo.png" alt="Logo" class="logo" />
+    <h2>Menu</h2>
+    <a href="index.html">Início</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="algoritmo.html">Algoritmo</a>
+    <a href="configuracoes.html">Configurações</a>
+    <a href="ajuda.html">Ajuda</a>
+  </aside>
+
+  <main class="main-content">
+    <div class="container">
+      <h1>Otimização de Hiperparâmetros de CNN com AG</h1>
+      
+      <form id="ga-form">
+        <div class="form-group">
+          <label for="pop_size">Tamanho da População
+            <span class="help-icon">?
+              <span class="tooltip">Número de indivíduos em cada geração (mínimo 2).</span>
+            </span>
+          </label>
+          <input type="number" id="pop_size" name="pop_size" value="6" min="2" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="generations">Número de Gerações
+            <span class="help-icon">?
+              <span class="tooltip">Quantas iterações do algoritmo genético serão executadas.</span>
+            </span>
+          </label>
+          <input type="number" id="generations" name="generations" value="10" min="1" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="mutation_rate">Taxa de Mutação
+            <span class="help-icon">?
+              <span class="tooltip">Probabilidade de mutação para cada indivíduo (0.0 a 1.0).</span>
+            </span>
+          </label>
+          <input type="number" id="mutation_rate" name="mutation_rate" value="0.3" step="0.01" min="0.0" max="1.0" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="ag_epochs">Épocas por Modelo
+            <span class="help-icon">?
+              <span class="tooltip">Número de épocas para treinar cada CNN durante avaliação.</span>
+            </span>
+          </label>
+          <input type="number" id="ag_epochs" name="ag_epochs" value="5" min="1" required>
+        </div>
+
+        <h2>Opções de Hiperparâmetros</h2>
+        
+        <div class="form-group">
+          <label for="learning_rate_options">Taxas de Aprendizado
+            <span class="help-icon">?
+              <span class="tooltip">Valores possíveis para taxa de aprendizado (separados por vírgula).</span>
+            </span>
+          </label>
+          <input type="text" id="learning_rate_options" name="learning_rate_options" value="0.01,0.005,0.001,0.0005">
+        </div>
+        
+        <div class="form-group">
+          <label for="batch_size_options">Tamanhos de Batch
+            <span class="help-icon">?
+              <span class="tooltip">Tamanhos possíveis para os batches de treinamento (separados por vírgula).</span>
+            </span>
+          </label>
+          <input type="text" id="batch_size_options" name="batch_size_options" value="8,16,32">
+        </div>
+        
+        <div class="form-group">
+          <label for="n_filters_options">Número de Filtros
+            <span class="help-icon">?
+              <span class="tooltip">Quantidades possíveis de filtros nas camadas convolucionais.</span>
+            </span>
+          </label>
+          <input type="text" id="n_filters_options" name="n_filters_options" value="16,32,64">
+        </div>
+        
+        <div class="form-group">
+          <label for="n_fc_options">Neurônios FC
+            <span class="help-icon">?
+              <span class="tooltip">Quantidades possíveis de neurônios na camada fully connected.</span>
+            </span>
+          </label>
+          <input type="text" id="n_fc_options" name="n_fc_options" value="64,128,256">
+        </div>
+        
+        <div class="form-group">
+          <label for="dropout_options">Taxas de Dropout
+            <span class="help-icon">?
+              <span class="tooltip">Valores possíveis para taxa de dropout (separados por vírgula).</span>
+            </span>
+          </label>
+          <input type="text" id="dropout_options" name="dropout_options" value="0.0,0.25,0.5">
+        </div>
+
+        <div class="buttons">
+          <button type="submit" class="submit-btn" id="run-button">Executar AG</button>          
+          <button type="button" class="stop-btn" id="stop-button" style="display: none;">Parar AG</button>
+          <button type="reset" class="clear-btn">Limpar Campos</button>
+        </div>
+      </form>
+      
+      <div id="loading-spinner" class="spinner" style="display: none;"></div>
+
+      <div id="current-progress" class="progress-container" style="display: none;">
+        <h2>Progresso Atual</h2>
+        <p><strong>Status Geral:</strong> <span id="status-message">Aguardando Execução...</span></p> 
+        <p><strong>Geração:</strong> <span id="current-generation">0</span> de <span id="total-generations">0</span></p>
+        <p><strong>Indivíduo:</strong> <span id="current-individual">0</span> de <span id="current-pop-size">0</span></p>
+        <p><strong>Acurácia do Indivíduo Atual:</strong> <span id="individual-accuracy">N/A</span></p>
+        <p><strong>Melhor Global:</strong> <code id="best-global-individual-summary">N/A</code></p>
+        <p><strong>Acurácia Global:</strong> <span id="best-global-accuracy-summary">N/A</span></p>
+      </div>
+
+      <div id="best-of-each-generation-container" class="progress-container" style="display: none;">
+        <h2>Melhores da Geração</h2>
+        <div id="generation-best-list">
+          </div>
+      </div>
+      <div id="results-container" class="results-container" style="display: none;">
+        <h2>Resultados Finais do Algoritmo Genético</h2>
+        
+        <h3>Relatório Final Detalhado</h3>
+        <p><strong>Tempo Total de Execução:</strong> <span id="final-total-time"></span> segundos</p>
+        <p><strong>Melhor Conjunto de Hiperparâmetros:</strong> <code id="final-best-individual"></code></p>
+        <p><strong>Acurácia de Validação Final:</strong> <span id="final-best-accuracy"></span></p>
+        <p><strong>Precisão Média de Validação Final:</strong> <span id="final-mean-precision"></span></p>
+        <p id="interruption-message" style="color: orange; font-weight: bold; display: none;">Execução interrompida prematuramente.</p>
+        
+        <div class="buttons" style="margin-top: 20px;">
+          <button type="button" class="submit-btn" id="export-results-btn">Exportar Resultados</button>
+        </div>
+ 
+        <h3>Histórico de Acurácias (Top 4 por Geração)</h3>
+        <canvas id="accuracyChart"></canvas>
+
+        <div id="image-examples-container" style="display: none;">
+          <h3>5 Exemplos de Acertos do Modelo Final</h3>
+          <div id="correct-predictions" class="image-grid"></div>
+
+          <h3>5 Exemplos de Erros do Modelo Final</h3>
+          <div id="incorrect-predictions" class="image-grid"></div>
+        </div>
+
+      </div>
+
+      <div class="log-container">
+        <h3>Log de Execução</h3>
+        <div id="execution-log" class="log-output"></div>
+      </div>
+
+      <div id="error-message" class="error-message" style="display: none;"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+# Dockerfile.frontend (agora em app/frontend/)
+FROM nginx:alpine
+
+# Remove a configuração padrão do Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copia os arquivos estáticos do frontend para o diretório do Nginx
+# AGORA TODO O CÓDIGO DO FRONTEND ESTÁ NO CONTEXTO, então o caminho é apenas '.'
+COPY . /usr/share/nginx/html/
+
+# Copia um arquivo de configuração customizado do Nginx
+# ESTE ARQUIVO nginx.conf ESTÁ NA RAIZ DO PROJETO, NÃO NO CONTEXTO DO FRONTEND.
+# Para acessá-lo a partir do contexto da raiz (onde o docker-compose.yml está),
+# ele precisa ser copiado diretamente do docker-compose.yml, ou
+# se for copiado do build context, o Dockerfile precisa de um truque de path ou
+# o docker-compose.yml precisa montá-lo via volume.
+# A forma mais simples é manter a cópia dele no docker-compose.yml como volume,
+# que já é o que está no seu setup atual e funciona.
+# Então, aqui, a cópia do nginx.conf no Dockerfile do frontend não é necessária
+# se o docker-compose.yml já está montando-o como volume.
+
+# A linha abaixo é COMENTADA/REMOVIDA pois o docker-compose.yml já monta o nginx.conf
+# COPY nginx.conf /etc/nginx/conf.d/ # REMOVIDO/COMENTADO
+
+# Expõe a porta padrão do Nginx
+EXPOSE 80
+
+# O Nginx já é o comando padrão de execução
+CMD ["nginx", "-g", "daemon off;"]

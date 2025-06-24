@@ -1,0 +1,20 @@
+# Dockerfile.backend (agora em app/backend/)
+FROM python:3.9-slim-buster
+
+# Define o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copia os arquivos de dependência e instala
+# AGORA O requirements.txt ESTÁ NO CONTEXTO, então o caminho é apenas 'requirements.txt'
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia todo o código do backend para o container
+# AGORA TODO O CÓDIGO DO BACKEND ESTÁ NO CONTEXTO, então o caminho é apenas '.'
+COPY . .
+
+# Expõe a porta que o FastAPI vai rodar
+EXPOSE 8000
+
+# Comando para iniciar o servidor Uvicorn com FastAPI
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

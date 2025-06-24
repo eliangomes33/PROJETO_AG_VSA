@@ -4,26 +4,24 @@ version: '3.8'
 services:
   backend:
     build:
-      context: . # O contexto é o diretório raiz do projeto
-      dockerfile: Dockerfile.backend # Usa o Dockerfile específico para o backend
+      context: ./app/backend # BUILD É app/backend/
+      dockerfile: Dockerfile.backend # O Dockerfile.backend
     ports:
-      - "8000:8000" # Mapeia a porta 8000 do host para a porta 8000 do container
+      - "8000:8000"
     volumes:
-      - ./backend:/app # Mapeia o diretório local do backend para /app no container (para desenvolvimento, mudanças refletem sem rebuild)
-      - ./data:/app/data # Mapeia um volume para persistir o dataset CIFAR-10
+      - ./app/backend:/app # O caminho local agora inclui 'app/'
+      - ./data:/app/data
     environment:
-      # Variáveis de ambiente para o backend, se necessário
-      PYTHONUNBUFFERED: 1 # Garante logs em tempo real
-      # CUDA_VISIBLE_DEVICES: "0" # Descomente e ajuste se quiser usar uma GPU específica
+      PYTHONUNBUFFERED: 1
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./app/frontend # AGORA O CONTEXTO DE BUILD É app/frontend/
+      dockerfile: Dockerfile.frontend # O Dockerfile.frontend está dentro do contexto
     ports:
-      - "8001:80" # Mapeia a porta 8001 do host para a porta 80 do container Nginx
+      - "8001:80"
     volumes:
-      - ./frontend:/usr/share/nginx/html # Mapeia o diretório local do frontend para o container (para desenvolvimento)
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf # Mapeia a configuração do Nginx
+      - ./app/frontend:/usr/share/nginx/html # O caminho local agora inclui 'app/'
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
     depends_on:
-      - backend # Garante que o backend seja iniciado antes do frontend
+      - backend
