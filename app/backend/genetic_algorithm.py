@@ -1,4 +1,4 @@
-# backend/genetic_algorithm.py
+# app/backend/genetic_algorithm.py
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -12,7 +12,7 @@ from numba import jit
 import io
 import base64
 from PIL import Image
-import asyncio # Importar asyncio para lidar com o Event
+import asyncio 
 
 # Garante que o benchmark do cuDNN esteja ativado para melhor desempenho em GPUs
 torch.backends.cudnn.benchmark = True
@@ -118,7 +118,6 @@ def calculate_metrics(preds, labels):
 
 
 # Função para avaliar o modelo
-# Adicionado stop_event para permitir interrupção durante o treinamento de um modelo
 def evaluate_model(individual_params, device, train_data, val_data, epochs=3, progress_callback=None, stop_event=None):
     train_loader = DataLoader(train_data, batch_size=individual_params["batch_size"], shuffle=True, num_workers=2)
     val_loader = DataLoader(val_data, batch_size=individual_params["batch_size"], shuffle=False, num_workers=2)
@@ -144,7 +143,7 @@ def evaluate_model(individual_params, device, train_data, val_data, epochs=3, pr
         if stop_event and stop_event.is_set():
             if progress_callback:
                 progress_callback({"type": "info", "message": f"  Interrupção detectada na época {epoch_idx + 1}/{epochs}. Parando treinamento do indivíduo."})
-            return 0.0, 0.0, np.array([]), np.array([]) # Retorna 0s ou valores que indiquem falha/interrupção
+            return 0.0, 0.0, None, None # Retorna 0s ou valores que indiquem falha/interrupção
 
         for xb, yb in train_loader:
             xb, yb = xb.to(device), yb.to(device)
@@ -187,13 +186,11 @@ def get_image_examples_for_frontend(dataset, preds, labels, acertos=True, n=5):
 
     condition_indices = np.where((preds == labels) if acertos else (preds != labels))[0]
     
-    # Seleciona aleatoriamente n índices, se houver mais de n
     if len(condition_indices) > n:
         idxs_to_plot = random.sample(list(condition_indices), n)
     else:
-        idxs_to_plot = list(condition_indices) # Converte para lista
+        idxs_to_plot = list(condition_indices)
 
-    # CIFAR-10 class names
     classes_cifar10 = [
         'airplane', 'automobile', 'bird', 'cat', 'deer',
         'dog', 'frog', 'horse', 'ship', 'truck'
@@ -202,11 +199,10 @@ def get_image_examples_for_frontend(dataset, preds, labels, acertos=True, n=5):
     image_data = []
     for idx_in_preds_labels in idxs_to_plot:
         if idx_in_preds_labels >= len(dataset):
-            continue # Garante que o índice não exceda o tamanho do dataset
+            continue
 
-        img_tensor, true_label_idx_original = dataset[idx_in_preds_labels] # Obtenha o índice da label do dataset original
+        img_tensor, true_label_idx_original = dataset[idx_in_preds_labels]
         
-        # Desnormalização para plotting (usando CIFAR-10 stats)
         mean = torch.tensor([0.4914, 0.4822, 0.4465], device=img_tensor.device).view(3, 1, 1)
         std = torch.tensor([0.2471, 0.2435, 0.2616], device=img_tensor.device).view(3, 1, 1)
         
@@ -220,7 +216,7 @@ def get_image_examples_for_frontend(dataset, preds, labels, acertos=True, n=5):
         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         pred_idx = preds[idx_in_preds_labels]
-        true_label_idx = labels[idx_in_preds_labels] # Use o rótulo do array 'labels' (que pode ser do subset)
+        true_label_idx = labels[idx_in_preds_labels]
 
         pred_class_name = classes_cifar10[pred_idx] if 0 <= pred_idx < len(classes_cifar10) else f"Class {pred_idx}"
         true_class_name = classes_cifar10[true_label_idx] if 0 <= true_label_idx < len(classes_cifar10) else f"Class {true_label_idx}"
@@ -234,7 +230,6 @@ def get_image_examples_for_frontend(dataset, preds, labels, acertos=True, n=5):
 
 
 # Algoritmo Genético
-# Adicionado stop_event_flag para permitir interrupção externa
 def run_genetic_algorithm(
     pop_size: int,
     generations: int,
@@ -309,8 +304,8 @@ def run_genetic_algorithm(
                 "total_generations": generations
             })
 
-        evaluations = []
-        gen_start_time = time.time() # NOVO: Tempo de início da geração
+        evaluations_this_gen = [] # NOVO: Armazena avaliações APENAS para a geração atual (economia de RAM)
+        gen_start_time = time.time()
         for i, ind in enumerate(population):
             # Verifica a flag de interrupção antes de avaliar cada indivíduo
             if stop_event_flag and stop_event_flag.is_set():
@@ -328,42 +323,54 @@ def run_genetic_algorithm(
                     "hyperparameters": ind
                 })
             
-            individual_eval_start_time = time.time() # NOVO: Tempo de início da avaliação do indivíduo
+            individual_eval_start_time = time.time()
             acc, prec, preds, labels = evaluate_model(ind, device, train_data=trainset, val_data=valset, epochs=ag_epochs, progress_callback=progress_callback, stop_event=stop_event_flag)
-            individual_eval_time = time.time() - individual_eval_start_time # NOVO: Tempo de avaliação do indivíduo
+            individual_eval_time = time.time() - individual_eval_start_time
 
-            # Se a avaliação do modelo foi interrompida, sai do loop de indivíduos
-            if stop_event_flag and stop_event_flag.is_set():
-                interrupted = True
-                break
-            
-            evaluations.append((ind, acc, prec, preds, labels, individual_eval_time)) # NOVO: Inclui tempo de avaliação
-        
+            # Se a avaliação do modelo foi interrompida ou falhou (preds/labels são None), não a considere como válida.
+            if preds is not None and labels is not None:
+                 evaluations_this_gen.append((ind, acc, prec, preds, labels, individual_eval_time)) # INCLUI PREDS/LABELS TEMPORARIAMENTE
+            else:
+                 if progress_callback:
+                     progress_callback({"type": "info", "message": f"  Avaliação do indivíduo {i+1} falhou ou foi interrompida. Pulando."})
+                 continue # Pula para o próximo indivíduo.
+
         # Se o loop de indivíduos foi interrompido, interrompe também o loop de gerações
         if interrupted:
             break
 
-        evaluations.sort(key=lambda x: x[1], reverse=True)
+        # Processa a geração APENAS se houver avaliações bem-sucedidas
+        if not evaluations_this_gen:
+            if progress_callback:
+                progress_callback({"type": "warning", "message": f"  Geração {generation+1} não teve avaliações bem-sucedidas. Pulando."})
+            continue # Pula para a próxima geração, a população será aleatória ou baseada em elitismo anterior
 
-        # Guarda as 4 melhores acurácias da geração (ou menos, se a população for menor)
-        history_accuracies.append([e[1] for e in evaluations[:min(len(evaluations), 4)]])
 
-        current_gen_best_acc = evaluations[0][1]
-        current_gen_best_prec = evaluations[0][2] # NOVO: Precisão do melhor da geração
-        current_gen_best_ind = evaluations[0][0]
-        current_gen_best_eval_time = evaluations[0][5] # NOVO: Tempo de avaliação do melhor da geração
+        evaluations_this_gen.sort(key=lambda x: x[1], reverse=True)
 
-        gen_total_time = time.time() - gen_start_time # NOVO: Tempo total da geração
+        history_accuracies.append([e[1] for e in evaluations_this_gen[:min(len(evaluations_this_gen), 4)]])
+
+        current_gen_best_acc = evaluations_this_gen[0][1]
+        current_gen_best_prec = evaluations_this_gen[0][2]
+        current_gen_best_ind = evaluations_this_gen[0][0]
+        current_gen_best_eval_time = evaluations_this_gen[0][5] # Índice ajustado
+
+        gen_total_time = time.time() - gen_start_time
 
         if current_gen_best_acc > best_accuracy:
-            best_individual, best_accuracy, best_precision, best_preds_final, best_labels_final, _ = evaluations[0] # NOVO: Ignora tempo aqui
+            # ATRIBUI OS PREDS/LABELS DO MELHOR GLOBAL APENAS AQUI!
+            best_individual = current_gen_best_ind
+            best_accuracy = current_gen_best_acc
+            best_precision = current_gen_best_prec
+            best_preds_final = evaluations_this_gen[0][3] # <--- PEGA PREDS DO MELHOR DA GERAÇÃO
+            best_labels_final = evaluations_this_gen[0][4] # <--- PEGA LABELS DO MELHOR DA GERAÇÃO
             if progress_callback:
                 progress_callback({
                     "type": "new_best_global",
                     "best_accuracy": best_accuracy,
                     "best_individual": best_individual,
                     "current_generation": generation + 1,
-                    "history_accuracies": history_accuracies # Envia o histórico completo para atualização do gráfico
+                    "history_accuracies": history_accuracies
                 })
 
         if progress_callback:
@@ -371,52 +378,47 @@ def run_genetic_algorithm(
                 "type": "generation_end",
                 "generation": generation + 1,
                 "best_accuracy_gen": current_gen_best_acc,
-                "best_precision_gen": current_gen_best_prec, # NOVO: Precisão
+                "best_precision_gen": current_gen_best_prec,
                 "best_individual_gen": current_gen_best_ind,
-                "eval_time_gen": current_gen_best_eval_time, # NOVO: Tempo de avaliação do melhor
-                "total_time_this_gen": gen_total_time, # NOVO: Tempo total da geração
-                "history_accuracies": history_accuracies # Envia histórico para gráfico em tempo real
+                "eval_time_gen": current_gen_best_eval_time,
+                "total_time_this_gen": gen_total_time,
+                "history_accuracies": history_accuracies
             })
 
         new_population = []
-        # Elitismo: Mantém os 2 melhores indivíduos para a próxima geração
-        if len(evaluations) >= 2:
-            new_population.extend([evaluations[0][0], evaluations[1][0]])
-        elif len(evaluations) == 1: # Se só um foi avaliado, mantém ele
-            new_population.extend([evaluations[0][0]])
-        # else: Se nenhuma avaliação foi bem-sucedida, new_population fica vazia, e o loop abaixo criará pop_size indivíduos aleatórios.
+        if len(evaluations_this_gen) >= 2:
+            new_population.extend([evaluations_this_gen[0][0], evaluations_this_gen[1][0]])
+        elif len(evaluations_this_gen) == 1:
+            new_population.extend([evaluations_this_gen[0][0]])
 
         while len(new_population) < pop_size:
-            # Seleção de 3 pais para crossover, priorizando os melhores
-            parents_pool = [e[0] for e in evaluations[:min(len(evaluations), max(2, pop_size // 2))]] # Pega os top X para serem pais
+            parents_pool = [e[0] for e in evaluations_this_gen[:min(len(evaluations_this_gen), max(2, pop_size // 2))]]
             
-            # Garante que haja pais para a seleção, mesmo que repetidos para pop_size pequenos
-            if len(parents_pool) < 3 and len(evaluations) > 0:
-                # Se não há 3 pais distintos entre os melhores, duplica os disponíveis
-                available_parents = [e[0] for e in evaluations] # Todos os avaliados
+            if len(parents_pool) < 3 and len(evaluations_this_gen) > 0:
+                available_parents = [e[0] for e in evaluations_this_gen]
                 if len(available_parents) >= 1:
-                    while len(parents_pool) < 3: # Garante ao menos 3 pais (podem ser repetidos)
+                    while len(parents_pool) < 3:
                         parents_pool.append(random.choice(available_parents))
-                else: # Fallback extremo: nenhuma avaliação bem-sucedida
+                else:
                     child = create_individual()
                     if progress_callback:
                         progress_callback({"type": "warning", "message": "  Aviso: Nenhuma avaliação bem-sucedida. Criando indivíduo aleatório para nova população."})
                     new_population.append(child)
-                    continue # Pula para a próxima iteração do while
-            elif len(parents_pool) == 0: # Caso evaluations esteja vazio (ex: tudo falhou)
+                    continue
+            elif len(parents_pool) == 0:
                 child = create_individual()
                 if progress_callback:
                     progress_callback({"type": "warning", "message": "  Aviso: Nenhuma avaliação bem-sucedida. Criando indivíduo aleatório para nova população."})
                 new_population.append(child)
                 continue
             
-            p1, p2, p3 = random.sample(parents_pool, 3) # Agora deve ter pelo menos 3 pais no pool
+            p1, p2, p3 = random.sample(parents_pool, 3)
 
             child = crossover(p1, p2, p3)
 
             if random.random() < mutation_rate:
                 filho = mutate(child)
-            new_population.append(child)
+            new_population.append(filho)
 
         population = new_population
         if progress_callback:
@@ -425,8 +427,6 @@ def run_genetic_algorithm(
 
     total_time = time.time() - start_time
     
-    # Obter exemplos de imagem apenas no final
-    # Apenas se não foi interrompido e temos um melhor modelo
     if not interrupted and best_preds_final is not None:
         correct_examples = get_image_examples_for_frontend(full_val_set, best_preds_final, best_labels_final, acertos=True, n=5)
         incorrect_examples = get_image_examples_for_frontend(full_val_set, best_preds_final, best_labels_final, acertos=False, n=5)
@@ -442,7 +442,7 @@ def run_genetic_algorithm(
         "tempo_total_segundos": total_time,
         "correct_examples": correct_examples,
         "incorrect_examples": incorrect_examples,
-        "interrupted": interrupted # Adiciona flag de interrupção aos resultados finais
+        "interrupted": interrupted
     }
 
     if progress_callback:

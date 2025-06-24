@@ -1,4 +1,4 @@
-// assets/js/script.js
+// app/frontend/script.js
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica do Menu Toggle (centralizada para todas as páginas) ---
@@ -51,11 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentPopSizeSpan = document.getElementById('current-pop-size');
         const individualAccuracySpan = document.getElementById('individual-accuracy');
         const bestGlobalIndividualSummarySpan = document.getElementById('best-global-individual-summary');
-        const bestGlobalAccuracySummarySpan = document = document.getElementById('best-global-accuracy-summary');
+        // CORREÇÃO: Erro de digitação 'document = ' removido aqui.
+        const bestGlobalAccuracySummarySpan = document.getElementById('best-global-accuracy-summary'); 
 
         // Elementos para o melhor de cada geração
-        const bestOfEachGenerationContainer = document.getElementById('best-of-each-generation-container'); // NOVO
-        const generationBestListDiv = document.getElementById('generation-best-list'); // NOVO
+        const bestOfEachGenerationContainer = document.getElementById('best-of-each-generation-container'); 
+        const generationBestListDiv = document.getElementById('generation-best-list');
 
         // Elementos para resultados finais
         const finalTotalTimeSpan = document.getElementById('final-total-time');
@@ -163,10 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     updateAccuracyChart(data.history_accuracies); 
                     break;
-                case "generation_end": // NOVO: Processa o melhor da geração
+                case "generation_end":
                     statusMessageSpan.textContent = `Geração ${data.generation} Concluída. Melhor da Geração: Acurácia ${(data.best_accuracy_gen * 100).toFixed(2)}%`;
                     
-                    // Exibir o melhor da geração na nova seção
                     addGenerationBestEntry({
                         generation: data.generation,
                         accuracy: data.best_accuracy_gen,
@@ -174,10 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         individual: data.best_individual_gen,
                         eval_time: data.eval_time_gen,
                         total_time_this_gen: data.total_time_this_gen,
-                        history_accuracies: data.history_accuracies // Para atualizar o gráfico em tempo real
+                        history_accuracies: data.history_accuracies
                     });
                     
-                    updateAccuracyChart(data.history_accuracies); // Atualiza o gráfico após cada geração
+                    updateAccuracyChart(data.history_accuracies);
                     break;
                 case "final_results":
                     displayResults(data.data);
@@ -202,9 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // NOVO: Função para adicionar uma entrada para o melhor da geração
         function addGenerationBestEntry(genData) {
-            bestOfEachGenerationContainer.style.display = 'block'; // Mostra a seção
+            bestOfEachGenerationContainer.style.display = 'block';
             const entryDiv = document.createElement('div');
             entryDiv.className = 'generation-best-entry';
             entryDiv.innerHTML = `
@@ -216,9 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>Hiperparâmetros:</strong> <code>${JSON.stringify(genData.individual, null, 2)}</code></p>
             `;
             generationBestListDiv.appendChild(entryDiv);
-            generationBestListDiv.scrollTop = generationBestListDiv.scrollHeight; // Scrolla para o final
+            generationBestListDiv.scrollTop = generationBestListDiv.scrollHeight;
         }
-        // FIM NOVO
 
         function updateAccuracyChart(history_accuracies) {
             const generations = history_accuracies.length;
@@ -338,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
             incorrectPredictionsDiv.innerHTML = '';
             interruptionMessageSpan.style.display = 'none';
             
-            // NOVO: Limpa a seção "Melhores da Geração"
+            // Limpa a seção "Melhores da Geração"
             bestOfEachGenerationContainer.style.display = 'none';
             generationBestListDiv.innerHTML = '';
 

@@ -1,4 +1,4 @@
-# backend/main.py
+# app/backend/main.py
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -25,7 +25,7 @@ origins = [
     "http://localhost:8001", # Porta do frontend
     "http://127.0.0.1",
     "http://127.0.0.1:8001", # Porta do frontend
-    #
+    # Adicione aqui o domínio de produção do seu frontend, se houver
 ]
 
 app.add_middleware(
