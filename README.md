@@ -151,9 +151,6 @@ Se a acurácia final não está satisfatória, você pode tentar as seguintes es
 
 Se você deseja contribuir para este projeto, sinta-se à vontade para fazer um fork do repositório e enviar Pull Requests.
 
-## 📝 Licença
-
-Este projeto está licenciado sob a licença MIT.
 
 ---
 
